@@ -38,7 +38,7 @@ struct ContentView: View {
                 
                 if vinFound {
                     VStack {
-                        Text("Scan this VIN #\(scannedText) ?")
+                        Text("VIN #\(scannedText)")
                         Button("Look up VIN") {
                             makeAPICall()
                         }
@@ -190,7 +190,6 @@ struct DocumentScannerView: UIViewControllerRepresentable {
             processItem(item: item)
         }
         
-        
         func processAddedItems(items: [RecognizedItem]) {
             for item in items {
                 processItem(item: item)
@@ -226,9 +225,6 @@ struct DocumentScannerView: UIViewControllerRepresentable {
                         //self.parent.onScanCompleted(
                     }
                 }
-//                DispatchQueue.main.async {
-//                    self.parent.onScanCompleted(text.transcript)
-//                }
             case .barcode:
                 break
             @unknown default:
@@ -237,7 +233,6 @@ struct DocumentScannerView: UIViewControllerRepresentable {
         }
         
         func addRoundBoxToItem(frame: CGRect, text: String, item: RecognizedItem) {
-            //let roundedRectView = RoundRectView(frame: frame)
             let roundedRectView = RoundedRectLabel(frame: frame)
             roundedRectView.setText(text: text)
             parent.scannerViewController.overlayContainerView.addSubview(roundedRectView)
