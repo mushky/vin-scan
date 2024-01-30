@@ -31,7 +31,6 @@ struct ContentView: View {
                 DocumentScannerView { scannedText in
                     self.scannedText = scannedText
                     self.vinFound = true
-                    //makeAPICall()
                 }
                 .navigationBarTitle("")
                 .navigationBarHidden(false)
@@ -120,9 +119,10 @@ struct DocumentScannerView: UIViewControllerRepresentable {
     static let textDataType: DataScannerViewController.RecognizedDataType = .text(
         languages: [
             "en-US",
-            "ja_JP"
+            //"ja_JP"
         ]
     )
+    
     var scannerViewController: DataScannerViewController = DataScannerViewController(
         recognizedDataTypes: [DocumentScannerView.textDataType, .barcode()],
         qualityLevel: .accurate,
