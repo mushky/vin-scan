@@ -16,24 +16,31 @@ import VisionKit
 // 3. Only make the API call when STOP scan is pressed
 
 struct ContentView: View {
+    @State private var isScanning = true
     @State private var isLoading = false
     @State private var apiResponse: String = ""
     @State private var scannedText: String = ""
     @State private var vinInfo: VinInfo?
     @State private var vinFound = false
-    
+        
     var body: some View {
         NavigationView {
             VStack {
                 Text("Scan VIN")
                     .font(.title)
                     .padding()
-                DocumentScannerView { scannedText in
+                
+                DocumentScannerView(onScanCompleted: { scannedText in
                     self.scannedText = scannedText
                     self.vinFound = true
-                }
+                }, isScanning: $isScanning)
                 .navigationBarTitle("")
                 .navigationBarHidden(false)
+//                DocumentScannerView(isScanning: $isScanning) { scannedText in
+//                    self.scannedText = scannedText
+//                    self.vinFound = true
+//                }
+
                 
                 if vinFound {
                     VStack {
@@ -54,6 +61,7 @@ struct ContentView: View {
                     Text(apiResponse)
                 }
             }
+            
         }
     }
     
@@ -108,6 +116,7 @@ struct VinInfo: Codable {
 @MainActor
 struct DocumentScannerView: UIViewControllerRepresentable { 
     var onScanCompleted: (String) -> Void
+    @Binding var isScanning: Bool
     @State private var isLoading = false
     @State private var apiResponse: String = "" // Add this line
     @State private var vinInfo: VinInfo? // Add this line
@@ -156,11 +165,22 @@ struct DocumentScannerView: UIViewControllerRepresentable {
             scanButton.bottomAnchor.constraint(equalTo: scannerViewController.view.safeAreaLayoutGuide.bottomAnchor, constant: -20)
         ])
         
+        if isScanning {
+            try? scannerViewController.startScanning()
+        } else {
+            scannerViewController.stopScanning()
+        }
+        
         return scannerViewController
     }
     
     func updateUIViewController(_ uiViewController: DataScannerViewController, context: Context) {
         // Update any view controller settings here
+        if isScanning {
+            try? uiViewController.startScanning()
+        } else {
+            uiViewController.stopScanning()
+        }
     }
     
     func makeCoordinator() -> Coordinator {
@@ -223,6 +243,8 @@ struct DocumentScannerView: UIViewControllerRepresentable {
                     addRoundBoxToItem(frame: frame, text: text.transcript, item: item)
                     DispatchQueue.main.async {
                         self.parent.onScanCompleted(transcript)
+                        self.parent.isScanning = false // Stop scanning
+                        self.parent.scannerViewController.stopScanning()
                         //self.parent.onScanCompleted(
                     }
                 }
