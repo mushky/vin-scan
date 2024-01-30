@@ -37,7 +37,7 @@ struct ContentView: View {
                 
                 if vinFound {
                     VStack {
-                        Text("VIN #\(scannedText)")
+                        Text("VIN #\(scannedText)").fontWeight(.bold)
                         Button("Look up VIN") {
                             makeAPICall()
                         }
