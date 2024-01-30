@@ -124,7 +124,8 @@ struct DocumentScannerView: UIViewControllerRepresentable {
     )
     
     var scannerViewController: DataScannerViewController = DataScannerViewController(
-        recognizedDataTypes: [DocumentScannerView.textDataType, .barcode()],
+        //recognizedDataTypes: [DocumentScannerView.textDataType, .barcode()],
+        recognizedDataTypes: [DocumentScannerView.textDataType],
         qualityLevel: .accurate,
         recognizesMultipleItems: false,
         isHighFrameRateTrackingEnabled: false,
