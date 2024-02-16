@@ -22,24 +22,57 @@ struct ContentView: View {
     @State private var scannedText: String = ""
     @State private var vinInfo: VinInfo?
     @State private var vinFound = false
+    var inputOptions = ["Scan VIN", "Enter VIN"]
+    @State private var selectedInputOption = 0
         
     var body: some View {
         NavigationView {
             VStack {
-                Text("Scan VIN")
-                    .font(.title)
-                    .padding()
-                
-                DocumentScannerView(onScanCompleted: { scannedText in
-                    self.scannedText = scannedText
-                    self.vinFound = true
-                }, isScanning: $isScanning)
-                .navigationBarTitle("")
-                .navigationBarHidden(false)
-//                DocumentScannerView(isScanning: $isScanning) { scannedText in
-//                    self.scannedText = scannedText
-//                    self.vinFound = true
-//                }
+                Picker("What is your favorite color?", selection: $selectedInputOption) {
+                    Text("Scan VIN").tag(0)
+                    Text("Enter VIN").tag(1)
+                }
+                .pickerStyle(.segmented)
+                .onChange (of: selectedInputOption) {
+                    self.scannedText = ""
+                    self.vinFound = false
+                    self.apiResponse = ""
+                 }
+                if selectedInputOption == 0 {
+                                    Text("Scan VIN")
+                                        .font(.title)
+                                        .padding()
+                    
+                    DocumentScannerView(onScanCompleted: { scannedText in
+                        self.scannedText = scannedText
+                        self.vinFound = true
+                    }, isScanning: $isScanning)
+                    .navigationBarTitle("")
+                    .navigationBarHidden(false)
+                    //                DocumentScannerView(isScanning: $isScanning) { scannedText in
+                    //                    self.scannedText = scannedText
+                    //                    self.vinFound = true
+                    //                }
+                }else {
+                    Text("Enter VIN")
+                        .font(.title)
+                        .padding()
+                    
+                    
+                    TextField("VIN #", text: $scannedText)
+                        .padding(.horizontal, 100)
+                        .foregroundColor(.black)
+                        .onChange(of: scannedText) { newValue in
+                            let vinNumber = newValue.trimmingCharacters(in: .whitespacesAndNewlines)
+                            if vinNumber.count == 17 {
+                                self.scannedText = vinNumber
+                                self.vinFound = true
+                            }else {
+                                self.apiResponse = ""
+                                self.vinFound = false
+                            }
+                        }
+                }
 
                 
                 if vinFound {
@@ -60,7 +93,11 @@ struct ContentView: View {
                 } else {
                     Text(apiResponse)
                 }
+                
+                Spacer()
+
             }
+
             
         }
     }
