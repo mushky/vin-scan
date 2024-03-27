@@ -69,6 +69,33 @@ export default () => {
 
 
   };
+
+  // Api calling from separate file with Async/Awaits
+  const fetchCarDailFromAPI = async () => {
+    try {
+      setIsLoading(true);
+      console.log('going to fetch data from new method....');
+      const myData = await api.fetchCarDetailFromAPI(value);
+      setData(myData);
+    } catch (error) {
+      console.log(error); 
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+    // Api calling from separate file with Promises
+  const fetchCarDetailFromAPIUsingPromises = () => {
+    setIsLoading(true);
+    api.fetchCarDetailFromAPI(value).then( (myData) => {
+      console.log('myData: ', myData);
+      setData(myData);
+    }).finally( () => {
+      setIsLoading(false);
+    });
+  };
+
+  // Direct API calling inside code
   const fetchCarDetail = async () => {
     try {
       console.log("going to fetch vin: ", value);
@@ -162,26 +189,8 @@ export default () => {
       } else {
         alert('You did not select any image.');
       }
-
-      // if (!cameraResp.canceled) {
-      //   const { uri } = cameraResp.assets[0];
-      //   const fileName = uri.split("/").pop();
-      //   const uploadResp = await uploadToFirebase(uri, fileName, (v) =>
-      //     console.log(v)
-      //   );
-      //   console.log(uploadResp);
-
-      //   listFiles().then((listResp) => {
-      //     const files = listResp.map((value) => {
-      //       return { name: value.fullPath };
-      //     });
-
-      //     setFiles(files);
-      //   });
-      // }
     } catch (e) {
       alert("Error Uploading Image " + e.message);
-      //Alert.alert("Error Uploading Image " + e.message);
     }
   };
 
@@ -249,7 +258,8 @@ export default () => {
         <Button
           onPress={() => {
             Keyboard.dismiss();
-            fetchCarDetail();
+            fetchCarDailFromAPI();
+            //fetchCarDetail();
           }}
           text="Fetch VIN Information"
           backgroundColor={isValidVIN ? colors.green : colors.orange}
